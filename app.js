@@ -5,8 +5,16 @@ require('dotenv').config()
 
 const app = express();
 
+
+const authRoute = require("./routes/auth.js")
+
 app.use(cors({credentials: true, origin: [process.env.CLIENT_URI]}))
 app.use(express.json())
+
+
+
+app.use('/auth', authRoute)
+
 
 app.use((err, req, res, next) => {
     const status = err.status || 500;
