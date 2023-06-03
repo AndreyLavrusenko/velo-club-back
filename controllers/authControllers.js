@@ -4,10 +4,10 @@ const jwt = require("jsonwebtoken");
 
 const loginTrainer = async (req, res, next) => {
     try {
-        if (req.body.login) {
+        if (req.headers.login) {
 
             const sql = `SELECT * FROM trainers WHERE login = ?`
-            const data = [req.body.login]
+            const data = [req.headers.login]
 
             // Отправка запроса и его проверка
             pool.query(sql, data, async (error, result) => {
@@ -18,7 +18,7 @@ const loginTrainer = async (req, res, next) => {
                 } else {
                     // Записываем id тренера
                     const token = jwt.sign(
-                        {isAdmin: true, id: result[0].id},
+                        {isTrainer: true, id: result[0].id},
                         process.env.SECRET_JWT,
                         {expiresIn: '30d'}
                     )
