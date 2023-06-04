@@ -14,7 +14,7 @@ const loginTrainer = async (req, res, next) => {
                 if (error) return res.status(400).json({message: error, resultCode: 1})
 
                 if (result.length === 0) {
-                    return res.status(200).json({resultCode: 1, message: 'Акканута с таким логином не найден'})
+                    return res.status(200).json({resultCode: 1, message: 'Аккаунт с таким логином не найден'})
                 } else {
                     // Записываем id тренера
                     const token = jwt.sign(

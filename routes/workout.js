@@ -7,7 +7,8 @@ const {
     resetWorkout,
     goToNextStage,
     getStartTime,
-    updateWorkout
+    updateWorkout,
+    getUpdateWorkout
 } = require("../controllers/workoutControllers.js");
 
 // Получает информацию о тренировке
@@ -29,5 +30,8 @@ router.get('/get-start-time', getStartTime)
 
 // Обновление тренировки
 router.put('/update-workout', updateWorkout)
+
+// Получение обновленной тренировки
+router.get('/get-update-workout', getUpdateWorkout)
 
 module.exports = router;
