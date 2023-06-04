@@ -160,6 +160,58 @@ const getStartTime = async (req, res, next) => {
     }
 }
 
+
+const updateWorkout = async (req, res, next) => {
+    try {
+
+        if (req.headers.workout_id) {
+
+            const sql = "UPDATE workout SET workout = ? WHERE id = ?"
+            const data = [JSON.stringify(req.body.workout), req.headers.workout_id]
+
+
+            pool.query(sql, data, async (error, result) => {
+                if (error) return res.status(400).json({message: error, resultCode: 1})
+
+                return res.status(200).json({resultCode: 0})
+            })
+
+        }
+
+    } catch (err) {
+        next(createError(400, "Что-то пошло не так"))
+    }
+}
+
+
+const getUpdateWorkout = async (req, res, next) => {
+    try {
+
+        if (req.headers.workout_id) {
+
+            const sql = "SELECT workout FROM workout WHERE id = ?"
+            const data = [req.headers.workout_id]
+
+
+            pool.query(sql, data, async (error, result) => {
+                if (error) return res.status(400).json({message: error, resultCode: 1})
+
+                if (result.length === 0) {
+                    return res.status(200).json({resultCode: 1})
+                } else {
+                    return res.status(200).json({resultCode: 0, workout: JSON.parse(result[0].workout)})
+                }
+            })
+
+        }
+
+    } catch (err) {
+        next(createError(400, "Что-то пошло не так"))
+    }
+}
+
+
+
 module.exports = {
     getWorkout,
     getWorkoutInfo,
@@ -167,4 +219,6 @@ module.exports = {
     resetWorkout,
     goToNextStage,
     getStartTime,
+    updateWorkout,
+    getUpdateWorkout,
 }
