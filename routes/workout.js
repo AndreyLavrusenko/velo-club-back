@@ -1,8 +1,16 @@
 const router = require('express').Router()
 
-const {getWorkout, getWorkoutInfo, startWorkout, resetWorkout, goToNextStage, getStartTime} = require("../controllers/workoutControllers.js");
+const {
+    getWorkout,
+    getWorkoutInfo,
+    startWorkout,
+    resetWorkout,
+    goToNextStage,
+    getStartTime,
+    updateWorkout
+} = require("../controllers/workoutControllers.js");
 
-
+// Получает информацию о тренировке
 router.get('/get-workout', getWorkout)
 
 // Получает информацию о тренировки каждые пару секунд
@@ -18,5 +26,8 @@ router.put('/reset-workout', resetWorkout)
 router.put('/go-next-stage', goToNextStage)
 
 router.get('/get-start-time', getStartTime)
+
+// Обновление тренировки
+router.put('/update-workout', updateWorkout)
 
 module.exports = router;
