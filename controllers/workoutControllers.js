@@ -152,6 +152,8 @@ const getStartTime = async (req, res, next) => {
             pool.query(sql, data, async (error, result) => {
                 if (error) return res.status(400).json({message: error, resultCode: 1})
 
+                // result[0].time_current = Date.now()
+
                 return res.status(200).json({resultCode: 0, time_start: result[0].time_start})
             })
 
