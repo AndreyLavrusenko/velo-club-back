@@ -40,6 +40,8 @@ const getWorkoutInfo = async (req, res, next) => {
                 if (result.length === 0) {
                     return res.status(200).json({resultCode: 1, message: 'Тренировка не найдена'})
                 } else {
+                    result[0].time_current = Date.now()
+
                     return res.status(200).json({resultCode: 0, data: result})
                 }
             })
@@ -58,8 +60,8 @@ const startWorkout = async (req, res, next) => {
 
             const date = Date.now()
 
-            const sql = "UPDATE workout SET is_start = ?, active_stage = ?, time_start = ? WHERE id = ?"
-            const data = [1, 1, date, req.headers.workout_id]
+            const sql = "UPDATE workout SET is_start = ?, active_stage = ?, time_start = ?, time_current = ? WHERE id = ?"
+            const data = [1, 1, date, date, req.headers.workout_id]
 
             pool.query(sql, data, async (error, result) => {
                 if (error) return res.status(400).json({message: error, resultCode: 1})
