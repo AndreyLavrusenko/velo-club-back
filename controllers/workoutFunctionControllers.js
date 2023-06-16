@@ -16,8 +16,8 @@ const createNewWorkout = (req, res, next) => {
 
             //TODO Возможно нудно будет сдлеать JSON.parse
 
-            const sqlCreateWorkout = "INSERT INTO workout (id, trainer_id) VALUES (?, ?)"
-            const dataCreateWorkout = [workout_id, decoded.id]
+            const sqlCreateWorkout = "INSERT INTO workout (id, trainer_id, workout) VALUES (?, ?, ?)"
+            const dataCreateWorkout = [workout_id, decoded.id, JSON.parse(JSON.stringify('[]'))]
 
             pool.query(sqlCreateWorkout, dataCreateWorkout, async (error, result) => {
                 if (error) return res.status(400).json({message: error, resultCode: 1})
@@ -46,7 +46,7 @@ const getAllUserWorkouts = (req, res, next) => {
 
             const decoded = jwt.verify(authToken, process.env.SECRET_JWT)
 
-            const sqlGetAllWorkout = "SELECT * FROM workout WHERE trainer_id = ?"
+            const sqlGetAllWorkout = "SELECT id, is_start, active_stage, workout_name FROM workout WHERE trainer_id = ?"
             const data = [decoded.id]
 
 
