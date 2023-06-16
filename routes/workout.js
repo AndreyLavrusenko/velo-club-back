@@ -11,6 +11,8 @@ const {
     getUpdateWorkout
 } = require("../controllers/workoutControllers.js");
 
+const {createNewWorkout, getAllUserWorkouts} = require("../controllers/workoutFunctionControllers.js");
+
 // Получает информацию о тренировке
 router.get('/get-workout', getWorkout)
 
@@ -33,5 +35,10 @@ router.put('/update-workout', updateWorkout)
 
 // Получение обновленной тренировки
 router.get('/get-update-workout', getUpdateWorkout)
+
+
+router.post('/create-workout', createNewWorkout)
+
+router.get('/get-all-user-workout', getAllUserWorkouts)
 
 module.exports = router;

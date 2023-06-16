@@ -1,5 +1,7 @@
 const createError = require("../error.js");
 const {pool} = require("../db.js");
+
+
 const getWorkout = async (req, res, next) => {
     try {
         if (req.headers.workout_id) {
