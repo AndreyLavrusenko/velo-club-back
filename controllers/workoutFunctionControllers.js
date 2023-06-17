@@ -8,7 +8,7 @@ const createNewWorkout = (req, res, next) => {
 
         const authToken = req.headers.token;
 
-        if (authToken) {
+        if (authToken && req.body.workout_name) {
 
             const decoded = jwt.verify(authToken, process.env.SECRET_JWT)
 
@@ -16,8 +16,8 @@ const createNewWorkout = (req, res, next) => {
 
             //TODO Возможно нудно будет сдлеать JSON.parse
 
-            const sqlCreateWorkout = "INSERT INTO workout (id, trainer_id, workout) VALUES (?, ?, ?)"
-            const dataCreateWorkout = [workout_id, decoded.id, JSON.parse(JSON.stringify('[]'))]
+            const sqlCreateWorkout = "INSERT INTO workout (id, trainer_id, workout, workout_name) VALUES (?, ?, ?, ?)"
+            const dataCreateWorkout = [workout_id, decoded.id, JSON.parse(JSON.stringify('[]')), req.body.workout_name]
 
             pool.query(sqlCreateWorkout, dataCreateWorkout, async (error, result) => {
                 if (error) return res.status(400).json({message: error, resultCode: 1})
@@ -28,6 +28,8 @@ const createNewWorkout = (req, res, next) => {
                 })
 
             })
+        } else {
+            res.status(401).json({resultCode: 1})
         }
 
 
@@ -59,9 +61,77 @@ const getAllUserWorkouts = (req, res, next) => {
                 })
 
             })
+        } else {
+            res.status(401).json({resultCode: 1})
         }
 
-        } catch (err) {
+    } catch (err) {
+        next(createError(400, 'Что-то пошло не так!'))
+    }
+}
+
+
+const getActiveWorkout = (req, res, next) => {
+    try {
+
+        const authToken = req.headers.token;
+
+        if (authToken) {
+
+            const decoded = jwt.verify(authToken, process.env.SECRET_JWT)
+
+            const sqlGetCurrentActiveWorkout = "SELECT current_workout FROM trainers WHERE id = ?"
+            const data = [decoded.id]
+
+
+            pool.query(sqlGetCurrentActiveWorkout, data, async (error, result) => {
+                if (error) return res.status(400).json({message: error, resultCode: 1})
+
+                return res.status(200).json({
+                    resultCode: 0,
+                    current_workout: result[0].current_workout
+                })
+
+            })
+        } else {
+            res.status(401).json({resultCode: 1})
+        }
+
+    } catch (err) {
+        next(createError(400, 'Что-то пошло не так!'))
+    }
+}
+
+
+const setActiveWorkout = (req, res, next) => {
+    try {
+
+        const authToken = req.headers.token;
+
+        if (authToken) {
+
+            if (!req.body.workout_id) return res.status(204).json({resultCode: 1})
+
+            const decoded = jwt.verify(authToken, process.env.SECRET_JWT)
+
+            const sqlGetCurrentActiveWorkout = "UPDATE trainers SET current_workout = ? WHERE id = ?"
+            const data = [req.body.workout_id, decoded.id]
+
+
+            pool.query(sqlGetCurrentActiveWorkout, data, async (error, result) => {
+                if (error) return res.status(400).json({message: error, resultCode: 1})
+
+                return res.status(200).json({
+                    resultCode: 0,
+                    current_workout: req.body.workout_id
+                })
+
+            })
+        } else {
+            res.status(401).json({resultCode: 1})
+        }
+
+    } catch (err) {
         next(createError(400, 'Что-то пошло не так!'))
     }
 }
@@ -70,4 +140,6 @@ const getAllUserWorkouts = (req, res, next) => {
 module.exports = {
     createNewWorkout,
     getAllUserWorkouts,
+    getActiveWorkout,
+    setActiveWorkout,
 }
