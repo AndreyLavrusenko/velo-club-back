@@ -300,7 +300,7 @@ const getWorkoutClub = (req, res, next) => {
 
 
                 } else {
-                    return res.status(200).json({resultCode: 0, message: 'Клубы не найдены', workout: []})
+                    return res.status(200).json({resultCode: 0, message: 'Клубы не найдены', result: []})
                 }
             })
 
