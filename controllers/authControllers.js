@@ -105,7 +105,67 @@ const registerTrainer = async (req, res, next) => {
 }
 
 
+const getUserInfo = (req, res, next) => {
+    try {
+
+        const authToken = req.headers.token;
+
+        if (authToken) {
+
+            const decoded = jwt.verify(authToken, process.env.SECRET_JWT)
+
+            const sqlGetUserInfo = "SELECT login, clubs FROM trainers WHERE id = ?"
+            const dataGetUserInfo = [decoded.id]
+
+            pool.query(sqlGetUserInfo, dataGetUserInfo, async (error, result) => {
+                if (error) return res.status(400).json({message: error, resultCode: 1})
+
+                if (result.length === 0) {
+                    return res.status(200).json({resultCode: 0, message: "Не удалось найти информацию о пользователе"})
+                } else {
+                    const name = result[0].login
+
+                    function getClubNameFromClubTable(arr, callback) {
+                        const resultArray = [];
+                        let pending = arr.length;
+                        const sql2 = "SELECT id, name FROM club WHERE id = ?"
+
+                        for (let i = 0; i < pending; i++) {
+                            const data2 = [arr[i]];
+
+                            pool.query(sql2, data2, (error, result) => {
+                                if (error) return res.status(400).json({message: "Products not found", resultCode: 1})
+
+                                resultArray.push(...result)
+                                if (0 === --pending) {
+                                    callback(resultArray)
+                                }
+                            })
+                        }
+                    }
+
+                    if (result[0].clubs) {
+                        const parseClub = JSON.parse(result[0].clubs)
+
+                        getClubNameFromClubTable(parseClub, resultArr => {
+                            return res.status(200).json({result: {name, clubs: resultArr}, resultCode: 0})
+                        })
+                    }
+                }
+            })
+
+        } else {
+            return res.status(401).json({resultCode: 1, message: "Вы не авторизованы"})
+        }
+
+    } catch (err) {
+        next(createError(400, "Что-то пошло не так!"))
+    }
+}
+
+
 module.exports = {
     loginTrainer,
-    registerTrainer
+    registerTrainer,
+    getUserInfo
 }

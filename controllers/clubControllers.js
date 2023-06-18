@@ -314,10 +314,82 @@ const getWorkoutClub = (req, res, next) => {
 }
 
 
+const findClub = (req, res, next) => {
+    try {
+
+        const authToken = req.headers.token;
+
+        if (authToken) {
+
+            if (req.headers.search_name) {
+
+                let replacement = `'${req.headers.search_name}%'`;
+
+                const sqlFindByName = `SELECT id, name FROM club WHERE name LIKE ${replacement}`
+
+                pool.query(sqlFindByName, (error, result) => {
+                    if (error) return res.status(400).json({message: "Products not found", resultCode: 1})
+
+                    if (result.length === 0) {
+                        return res.status(200).json({resultCode: 1, message: "Не удалось найти такой клуб"})
+                    } else {
+                        return res.status(200).json({resultCode: 0, result})
+                    }
+                })
+
+
+            } else {
+                return res.status(200).json({resultCode: 1, message: "Введите название"})
+            }
+
+        }
+
+    } catch (err) {
+        next(createError(400, 'Что-то пошло не так!'))
+    }
+}
+
+
+
+const getAllMyClubs = (req, res, next) => {
+    try {
+
+        const authToken = req.headers.token;
+
+        if (authToken) {
+
+            const decoded = jwt.verify(authToken, process.env.SECRET_JWT)
+
+            const sqlFindMyClubs = "SELECT clubs FROM trainers WHERE id = ?"
+            const dataFind = [decoded.id]
+
+            pool.query(sqlFindMyClubs, dataFind, (error, result) => {
+                if (error) return res.status(400).json({message: "Products not found", resultCode: 1})
+
+                if (result[0].clubs) {
+
+                    const parseClub = JSON.parse(result[0].clubs)
+
+                    return res.status(200).json({resultCode: 0, result: parseClub})
+
+                } else {
+                    return res.status(200).json({resultCode: 0, result: []})
+                }
+            })
+
+        }
+
+    } catch (err) {
+        next(createError(400, 'Что-то пошло не так!'))
+    }
+}
+
 module.exports = {
     getCreatedByUserClub,
     createClub,
     getAllClubs,
     joinToTheClub,
     getWorkoutClub,
+    findClub,
+    getAllMyClubs,
 }
