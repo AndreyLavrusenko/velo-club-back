@@ -8,13 +8,15 @@ const {
     goToNextStage,
     getStartTime,
     updateWorkout,
-    getUpdateWorkout
+    getUpdateWorkout,
+    checkWhoOwnsWorkout
 } = require("../controllers/workoutControllers.js");
 
 const {
     createNewWorkout,
     getAllUserWorkouts,
-    getActiveWorkout, setActiveWorkout
+    getActiveWorkout,
+    setActiveWorkout
 } = require("../controllers/workoutFunctionControllers.js");
 
 // Получает информацию о тренировке
@@ -51,5 +53,8 @@ router.get('/get-active-workout', getActiveWorkout)
 
 // Устанавливает активную тренировку для пользователя
 router.post('/set-active-workout', setActiveWorkout)
+
+// Проверяет кому принадлежит тренировка
+router.get('/check-who-owns-workout', checkWhoOwnsWorkout)
 
 module.exports = router;
