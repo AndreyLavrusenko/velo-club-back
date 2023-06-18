@@ -8,6 +8,7 @@ const app = express();
 
 const authRoute = require("./routes/auth.js")
 const workoutRoute = require("./routes/workout.js")
+const clubRoute = require("./routes/club.js")
 
 app.use(cors({credentials: true, origin: [process.env.CLIENT_URI]}))
 app.use(express.json())
@@ -17,6 +18,8 @@ app.use(express.json())
 app.use('/auth', authRoute)
 
 app.use('/workout', workoutRoute)
+
+app.use('/club', clubRoute)
 
 
 app.use((err, req, res, next) => {
