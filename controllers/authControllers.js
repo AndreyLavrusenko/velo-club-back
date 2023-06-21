@@ -150,6 +150,8 @@ const getUserInfo = (req, res, next) => {
                         getClubNameFromClubTable(parseClub, resultArr => {
                             return res.status(200).json({result: {name, clubs: resultArr}, resultCode: 0})
                         })
+                    } else {
+                        return res.status(200).json({result: {name, clubs: []}, resultCode: 0})
                     }
                 }
             })
@@ -164,8 +166,75 @@ const getUserInfo = (req, res, next) => {
 }
 
 
+const changeUsername = (req, res, next) => {
+    try {
+
+        const authToken = req.headers.token;
+
+        if (authToken) {
+
+            const decoded = jwt.verify(authToken, process.env.SECRET_JWT)
+
+            if (req.body.login) {
+
+                const sql = `UPDATE trainers SET login = ? WHERE id = ?`
+                const data = [req.body.login, decoded.id]
+
+                // Отправка запроса и его проверка
+                pool.query(sql, data, async (error, result) => {
+                    if (error) return res.status(400).json({message: error, resultCode: 1})
+
+                   return res.status(200).json({resultCode: 0, message: 'Логин успешно изменен'})
+                })
+
+            }
+
+        }
+
+    } catch (err) {
+        next(createError(400, "Что-то пошло не так!"))
+    }
+}
+
+
+const changePassword = async (req, res, next) => {
+    try {
+
+        const authToken = req.headers.token;
+
+        if (authToken) {
+
+            const decoded = jwt.verify(authToken, process.env.SECRET_JWT)
+
+            if (req.body.password) {
+
+                const salt = await bcrypt.genSalt(10)
+                const hashedPassword = await bcrypt.hash(req.body.password, salt)
+
+                const sql = "UPDATE trainers SET password = ? WHERE id = ?"
+                const data = [hashedPassword, decoded.id]
+
+                pool.query(sql, data, async (error, result) => {
+                    if (error) return res.status(400).json({message: error, resultCode: 1})
+
+                    return res.status(200).json({resultCode: 0, message: 'Пароль успешно изменен'})
+                })
+
+            }
+
+        }
+
+    } catch (err) {
+        next(createError(400, "Что-то пошло не так!"))
+    }
+}
+
+
+
 module.exports = {
     loginTrainer,
     registerTrainer,
-    getUserInfo
+    getUserInfo,
+    changeUsername,
+    changePassword,
 }
