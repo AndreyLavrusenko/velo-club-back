@@ -135,7 +135,7 @@ const getAllClubs = (req, res, next) => {
                 } else {
                     return res.status(200).json({
                         resultCode: 0,
-                        clubs: result
+                        clubs: result.length
                     })
                 }
             })
