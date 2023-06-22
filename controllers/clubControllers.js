@@ -384,6 +384,32 @@ const getAllMyClubs = (req, res, next) => {
     }
 }
 
+
+const getVeloClubWorkout = (req, res, next) => {
+    try {
+
+        const authToken = req.headers.token;
+
+        if (authToken) {
+
+            const sqlFindMyClubs = "SELECT id, workout_name, is_start FROM workout WHERE is_club_workout = 1"
+
+            pool.query(sqlFindMyClubs, (error, result) => {
+                if (error) return res.status(400).json({message: "Products not found", resultCode: 1})
+
+                return res.status(200).json({
+                    resultCode: 0,
+                    result
+                })
+            })
+
+        }
+
+    } catch (err) {
+        next(createError(400, 'Что-то пошло не так!'))
+    }
+}
+
 module.exports = {
     getCreatedByUserClub,
     createClub,
@@ -392,4 +418,5 @@ module.exports = {
     getWorkoutClub,
     findClub,
     getAllMyClubs,
+    getVeloClubWorkout
 }

@@ -14,10 +14,8 @@ const createNewWorkout = (req, res, next) => {
 
             const workout_id = uuidv4()
 
-            //TODO Возможно нудно будет сдлеать JSON.parse
-
-            const sqlCreateWorkout = "INSERT INTO workout (id, trainer_id, workout, workout_name) VALUES (?, ?, ?, ?)"
-            const dataCreateWorkout = [workout_id, decoded.id, JSON.parse(JSON.stringify('[]')), req.body.workout_name]
+            const sqlCreateWorkout = "INSERT INTO workout (id, trainer_id, workout, workout_name, is_club_workout) VALUES (?, ?, ?, ?, ?)"
+            const dataCreateWorkout = [workout_id, decoded.id, JSON.parse(JSON.stringify('[]')), req.body.workout_name, req.headers.admin]
 
             pool.query(sqlCreateWorkout, dataCreateWorkout, async (error, result) => {
                 if (error) return res.status(400).json({message: error, resultCode: 1})
@@ -89,7 +87,7 @@ const getActiveWorkout = (req, res, next) => {
 
                 return res.status(200).json({
                     resultCode: 0,
-                    current_workout: result[0].current_workout
+                    current_workout: result[0].current_workout ?? null
                 })
 
             })
