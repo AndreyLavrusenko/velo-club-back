@@ -1,5 +1,8 @@
 const createError = require("../error.js");
 const {pool} = require("../db.js");
+const jwt = require("jsonwebtoken");
+
+
 const getWorkout = async (req, res, next) => {
     try {
         if (req.headers.workout_id) {
@@ -62,6 +65,7 @@ const startWorkout = async (req, res, next) => {
 
             const sql = "UPDATE workout SET is_start = ?, active_stage = ?, time_start = ?, time_current = ? WHERE id = ?"
             const data = [1, 1, date, date, req.headers.workout_id]
+
 
             pool.query(sql, data, async (error, result) => {
                 if (error) return res.status(400).json({message: error, resultCode: 1})
@@ -152,8 +156,6 @@ const getStartTime = async (req, res, next) => {
             pool.query(sql, data, async (error, result) => {
                 if (error) return res.status(400).json({message: error, resultCode: 1})
 
-                // result[0].time_current = Date.now()
-
                 return res.status(200).json({resultCode: 0, time_start: result[0].time_start})
             })
 
@@ -216,6 +218,50 @@ const getUpdateWorkout = async (req, res, next) => {
 
 
 
+const checkWhoOwnsWorkout = (req, res, next) => {
+    try {
+
+        const authToken = req.headers.token;
+
+        if (authToken) {
+
+            const decoded = jwt.verify(authToken, process.env.SECRET_JWT)
+
+            if (req.headers.workout_id) {
+
+                const sql = "SELECT trainer_id FROM workout WHERE id = ?"
+                const data = [req.headers.workout_id]
+
+
+                pool.query(sql, data, async (error, result) => {
+                    if (error) return res.status(400).json({message: error, resultCode: 1})
+
+                    if (result.length === 0) {
+                        return res.status(200).json({resultCode: 1, message: "id теренера не найден"})
+                    } else {
+                        if (result[0].trainer_id === decoded.id) {
+                            return res.status(200).json({resultCode: 0, isTrainer: true})
+                        } else {
+                            return res.status(200).json({resultCode: 0, isTrainer: false})
+                        }
+                    }
+                })
+
+            } else {
+                res.status(404).json({resultCode: 1})
+            }
+
+        } else {
+            res.status(401).json({resultCode: 1})
+        }
+
+    } catch (err) {
+        next(createError(400, "Что-то пошло не так"))
+    }
+}
+
+
+
 module.exports = {
     getWorkout,
     getWorkoutInfo,
@@ -225,4 +271,5 @@ module.exports = {
     getStartTime,
     updateWorkout,
     getUpdateWorkout,
+    checkWhoOwnsWorkout,
 }
