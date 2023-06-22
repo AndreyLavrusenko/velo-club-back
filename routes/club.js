@@ -7,7 +7,8 @@ const {
     joinToTheClub,
     getWorkoutClub,
     findClub,
-    getAllMyClubs
+    getAllMyClubs,
+    getVeloClubWorkout
 } = require("../controllers/clubControllers.js");
 
 
@@ -24,5 +25,7 @@ router.get('/get-workout-club', getWorkoutClub)
 router.get('/find-club', findClub)
 
 router.get('/get-all-my-clubs', getAllMyClubs)
+
+router.get('/get-veloclub-workout', getVeloClubWorkout)
 
 module.exports = router;

@@ -9,7 +9,7 @@ const loginTrainer = async (req, res, next) => {
         if (req.body.login && req.body.password) {
 
             // Получаю пароль из бд по логину
-            const sqlGetPas = "SELECT id, password FROM trainers WHERE login = ?"
+            const sqlGetPas = "SELECT id, password, isAdmin FROM trainers WHERE login = ?"
             const dataGetPas = [req.body.login]
 
             pool.query(sqlGetPas, dataGetPas, async (error, result) => {
@@ -34,7 +34,8 @@ const loginTrainer = async (req, res, next) => {
                             .json({
                                 resultCode: 0,
                                 message: "Successfully Login",
-                                token
+                                token,
+                                isAdmin: result[0].isAdmin
                             })
                     } else {
                         return res.status(200).json({resultCode: 1, message: 'Неверный логин или пароль'})
