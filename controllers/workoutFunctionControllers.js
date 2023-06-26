@@ -80,7 +80,7 @@ const getActiveWorkout = (req, res, next) => {
 
             const decoded = jwt.verify(authToken, process.env.SECRET_JWT)
 
-            const sqlGetCurrentActiveWorkout = "SELECT current_workout2, id FROM trainers WHERE id = ?"
+            const sqlGetCurrentActiveWorkout = "SELECT current_workout, id FROM trainers WHERE id = ?"
             const data = [decoded.id]
 
 
