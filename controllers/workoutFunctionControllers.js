@@ -87,13 +87,13 @@ const getActiveWorkout = (req, res, next) => {
             pool.query(sqlGetCurrentActiveWorkout, data, async (error, result) => {
                 if (error) return res.status(400).json({message: error, resultCode: 1})
 
+                console.log(result[0])
+                console.log(result[0].current_workout)
+
                 let workoutRes = null
                 if (result[0].current_workout) {
                     workoutRes = res[0].current_workout
                 }
-
-                console.log(result[0])
-                console.log(result[0].current_workout)
 
                 return res.status(200).json({
                     resultCode: 0,
