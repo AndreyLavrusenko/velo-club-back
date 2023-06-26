@@ -80,20 +80,17 @@ const getActiveWorkout = (req, res, next) => {
 
             const decoded = jwt.verify(authToken, process.env.SECRET_JWT)
 
-            const sqlGetCurrentActiveWorkout = "SELECT * FROM trainers WHERE id = ?"
+            const sqlGetCurrentActiveWorkout = "SELECT current_workout FROM trainers WHERE id = ?"
             const data = [decoded.id]
 
 
             pool.query(sqlGetCurrentActiveWorkout, data, async (error, result) => {
                 if (error) return res.status(400).json({message: error, resultCode: 1})
 
-                console.log(result)
-                console.log(result[0])
-                console.log(result[0].current_workout)
 
                 let workoutRes = null
                 if (result[0].current_workout) {
-                    workoutRes = res[0].current_workout
+                    workoutRes = result[0].current_workout
                 }
 
                 return res.status(200).json({
