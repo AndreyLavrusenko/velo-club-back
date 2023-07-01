@@ -143,9 +143,39 @@ const setActiveWorkout = (req, res, next) => {
 }
 
 
+const deleteWorkout = (req, res, next) => {
+    try {
+
+        const authToken = req.headers.token;
+
+        if (authToken) {
+
+            if (!req.headers.workout_id) return res.status(204).json({resultCode: 1})
+
+            const sqlGetCurrentActiveWorkout = "DELETE FROM workout WHERE id = ?"
+            const data = [req.headers.workout_id]
+
+
+            pool.query(sqlGetCurrentActiveWorkout, data, async (error, result) => {
+                if (error) return res.status(400).json({message: error, resultCode: 1})
+
+                return res.status(200).json({resultCode: 0})
+
+            })
+        } else {
+            res.status(401).json({resultCode: 1})
+        }
+
+    } catch (err) {
+        next(createError(400, 'Что-то пошло не так!'))
+    }
+}
+
+
 module.exports = {
     createNewWorkout,
     getAllUserWorkouts,
     getActiveWorkout,
     setActiveWorkout,
+    deleteWorkout,
 }

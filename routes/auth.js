@@ -5,7 +5,8 @@ const {
     registerTrainer,
     getUserInfo,
     changeUsername,
-    changePassword
+    changePassword,
+    changePasswordUsingLogin
 } = require("../controllers/authControllers.js");
 
 
@@ -18,5 +19,7 @@ router.get('/get-user-info', getUserInfo)
 router.put('/change-username', changeUsername)
 
 router.put('/change-password', changePassword)
+
+router.put('/change-password-using-login', changePasswordUsingLogin)
 
 module.exports = router;

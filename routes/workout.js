@@ -16,7 +16,8 @@ const {
     createNewWorkout,
     getAllUserWorkouts,
     getActiveWorkout,
-    setActiveWorkout
+    setActiveWorkout,
+    deleteWorkout
 } = require("../controllers/workoutFunctionControllers.js");
 
 // Получает информацию о тренировке
@@ -56,5 +57,8 @@ router.post('/set-active-workout', setActiveWorkout)
 
 // Проверяет кому принадлежит тренировка
 router.get('/check-who-owns-workout', checkWhoOwnsWorkout)
+
+// Удаление тренировки
+router.delete('/delete-workout', deleteWorkout)
 
 module.exports = router;
