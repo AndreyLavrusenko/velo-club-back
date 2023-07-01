@@ -92,7 +92,7 @@ const registerTrainer = async (req, res, next) => {
                             })
                     })
 
-                // Если аккаунт с такоим логином уже существует, то выводим ошибку
+                    // Если аккаунт с такоим логином уже существует, то выводим ошибку
                 } else {
                     return res.status(200).json({resultCode: 1, message: 'Такой аккаунт уже существует'})
                 }
@@ -185,7 +185,7 @@ const changeUsername = (req, res, next) => {
                 pool.query(sql, data, async (error, result) => {
                     if (error) return res.status(400).json({message: error, resultCode: 1})
 
-                   return res.status(200).json({resultCode: 0, message: 'Логин успешно изменен'})
+                    return res.status(200).json({resultCode: 0, message: 'Логин успешно изменен'})
                 })
 
             }
@@ -231,6 +231,40 @@ const changePassword = async (req, res, next) => {
 }
 
 
+const changePasswordUsingLogin = async (req, res, next) => {
+    try {
+
+        if (req.body.new_password && req.body.login) {
+
+            const sqlFindByLogin = "SELECT id FROM trainers WHERE login = ?"
+            const dataFindByLogin = [req.body.login]
+
+            pool.query(sqlFindByLogin, dataFindByLogin, async (error, result) => {
+                if (error) return res.status(400).json({message: error, resultCode: 1})
+
+                if (result.length > 0) {
+                    const salt = await bcrypt.genSalt(10)
+                    const hashedPassword = await bcrypt.hash(req.body.new_password, salt)
+
+                    const sql = "UPDATE trainers SET password = ? WHERE login = ?"
+                    const data = [hashedPassword, req.body.login]
+
+                    pool.query(sql, data, async (error, result) => {
+                        if (error) return res.status(400).json({message: error, resultCode: 1})
+
+                        return res.status(200).json({resultCode: 0, message: 'Пароль успешно изменен'})
+                    })
+                } else {
+                    return res.status(200).json({message: error, resultCode: 1})
+                }
+            })
+        }
+
+    } catch (err) {
+        next(createError(400, "Что-то пошло не так!"))
+    }
+}
+
 
 module.exports = {
     loginTrainer,
@@ -238,4 +272,5 @@ module.exports = {
     getUserInfo,
     changeUsername,
     changePassword,
+    changePasswordUsingLogin,
 }
