@@ -5,6 +5,9 @@ const jwt = require("jsonwebtoken");
 
 const getWorkout = async (req, res, next) => {
     try {
+        console.log(req.headers.workout_id)
+        console.log(req.headers.Workout_id)
+        console.log(req.headers)
         if (req.headers.workout_id) {
 
             const sql = "SELECT * FROM workout WHERE id = ?"
