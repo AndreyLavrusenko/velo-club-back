@@ -10,7 +10,7 @@ const authRoute = require("./routes/auth.js")
 const workoutRoute = require("./routes/workout.js")
 const clubRoute = require("./routes/club.js")
 
-app.use(cors({credentials: true, origin: [process.env.CLIENT_URI]}))
+app.use(cors({credentials: true, origin: [process.env.CLIENT_URI], allowedHeaders: ['Content-Type', 'Authorization', 'workout_id', 'token'],}))
 app.use(express.json())
 
 
