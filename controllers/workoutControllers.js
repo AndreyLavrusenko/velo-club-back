@@ -5,13 +5,13 @@ const jwt = require("jsonwebtoken");
 
 const getWorkout = async (req, res, next) => {
     try {
-        console.log(req.headers.workout_id)
-        console.log(req.headers.Workout_id)
-        console.log(req.headers)
-        if (req.headers.workout_id) {
+        console.log(req.query.workout_id)
+        console.log(req.query.Workout_id)
+        console.log(req.query)
+        if (req.query.workout_id) {
 
             const sql = "SELECT * FROM workout WHERE id = ?"
-            const data = [req.headers.workout_id]
+            const data = [req.query.workout_id]
 
             pool.query(sql, data, async (error, result) => {
                 if (error) return res.status(400).json({message: error, resultCode: 1})
