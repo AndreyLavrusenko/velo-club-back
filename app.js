@@ -12,7 +12,7 @@ const clubRoute = require("./routes/club.js")
 
 app.use(cors({credentials: true, origin: [process.env.CLIENT_URI], allowedHeaders: ['Content-Type', 'Authorization', 'workout_id', 'token'],}))
 app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+  res.header("Access-Control-Allow-Origin", process.env.CLIENT_URI);  // Укажите точный домен
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
