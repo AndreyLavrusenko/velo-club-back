@@ -150,10 +150,10 @@ const deleteWorkout = (req, res, next) => {
 
         if (authToken) {
 
-            if (!req.headers.workout_id) return res.status(204).json({resultCode: 1})
+            if (!req.query.workout_id) return res.status(204).json({resultCode: 1})
 
             const sqlGetCurrentActiveWorkout = "DELETE FROM workout WHERE id = ?"
-            const data = [req.headers.workout_id]
+            const data = [req.query.workout_id]
 
 
             pool.query(sqlGetCurrentActiveWorkout, data, async (error, result) => {

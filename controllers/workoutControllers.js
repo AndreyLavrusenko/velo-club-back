@@ -5,9 +5,7 @@ const jwt = require("jsonwebtoken");
 
 const getWorkout = async (req, res, next) => {
     try {
-        console.log(req.query.workout_id)
-        console.log(req.query.Workout_id)
-        console.log(req.query)
+
         if (req.query.workout_id) {
 
             const sql = "SELECT * FROM workout WHERE id = ?"
@@ -35,10 +33,10 @@ const getWorkout = async (req, res, next) => {
 const getWorkoutInfo = async (req, res, next) => {
     try {
 
-        if (req.headers.workout_id) {
+        if (req.query.workout_id) {
 
             const sql = "SELECT is_start, active_stage, time_start FROM workout WHERE id = ?"
-            const data = [req.headers.workout_id]
+            const data = [req.query.workout_id]
 
             pool.query(sql, data, async (error, result) => {
                 if (error) return res.status(400).json({message: error, resultCode: 1})
@@ -62,12 +60,12 @@ const getWorkoutInfo = async (req, res, next) => {
 
 const startWorkout = async (req, res, next) => {
     try {
-        if (req.headers.workout_id) {
+        if (req.query.workout_id) {
 
             const date = Date.now()
 
             const sql = "UPDATE workout SET is_start = ?, active_stage = ?, time_start = ?, time_current = ? WHERE id = ?"
-            const data = [1, 1, date, date, req.headers.workout_id]
+            const data = [1, 1, date, date, req.query.workout_id]
 
 
             pool.query(sql, data, async (error, result) => {
@@ -85,10 +83,10 @@ const startWorkout = async (req, res, next) => {
 
 const resetWorkout = async (req, res, next) => {
     try {
-        if (req.headers.workout_id) {
+        if (req.query.workout_id) {
 
             const sql = "UPDATE workout SET is_start = ?, active_stage = ?, time_start = ? WHERE id = ?"
-            const data = [0, 0, null, req.headers.workout_id]
+            const data = [0, 0, null, req.query.workout_id]
 
             pool.query(sql, data, async (error, result) => {
                 if (error) return res.status(400).json({message: error, resultCode: 1})
@@ -106,10 +104,10 @@ const resetWorkout = async (req, res, next) => {
 const goToNextStage = async (req, res, next) => {
     try {
 
-        if (req.headers.workout_id) {
+        if (req.query.workout_id) {
 
             const sqlGetAllStage = "SELECT workout FROM workout WHERE id = ?"
-            const dataGetAllStage = [req.headers.workout_id]
+            const dataGetAllStage = [req.query.workout_id]
 
             pool.query(sqlGetAllStage, dataGetAllStage, async (error, result) => {
                 if (error) return res.status(400).json({message: error, resultCode: 1})
@@ -121,7 +119,7 @@ const goToNextStage = async (req, res, next) => {
                 if (req.body.current_stage < workoutLength) {
 
                     const sqlNextStage = "UPDATE workout SET active_stage = ? WHERE id = ?"
-                    const dataNextStage = [nextStage, req.headers.workout_id]
+                    const dataNextStage = [nextStage, req.query.workout_id]
 
                     pool.query(sqlNextStage, dataNextStage, async (error, result) => {
                         if (error) return res.status(400).json({message: error, resultCode: 1})
@@ -131,7 +129,7 @@ const goToNextStage = async (req, res, next) => {
 
                 } else if (req.body.current_stage === workoutLength) {
                     const sqlEndWorkout = "UPDATE workout SET active_stage = ?, is_start = ?, time_start = ? WHERE id = ?"
-                    const dataEndWorkout = [0, 0, null, req.headers.workout_id]
+                    const dataEndWorkout = [0, 0, null, req.query.workout_id]
 
                     pool.query(sqlEndWorkout, dataEndWorkout, async (error, result) => {
                         if (error) return res.status(400).json({message: error, resultCode: 1})
@@ -151,10 +149,10 @@ const goToNextStage = async (req, res, next) => {
 const getStartTime = async (req, res, next) => {
     try {
 
-        if (req.headers.workout_id) {
+        if (req.query.workout_id) {
 
             const sql = "SELECT time_start FROM workout WHERE id = ?"
-            const data = [req.headers.workout_id]
+            const data = [req.query.workout_id]
 
             pool.query(sql, data, async (error, result) => {
                 if (error) return res.status(400).json({message: error, resultCode: 1})
@@ -173,10 +171,10 @@ const getStartTime = async (req, res, next) => {
 const updateWorkout = async (req, res, next) => {
     try {
 
-        if (req.headers.workout_id) {
+        if (req.query.workout_id) {
 
             const sql = "UPDATE workout SET workout = ? WHERE id = ?"
-            const data = [JSON.stringify(req.body.workout), req.headers.workout_id]
+            const data = [JSON.stringify(req.body.workout), req.query.workout_id]
 
 
             pool.query(sql, data, async (error, result) => {
@@ -196,10 +194,10 @@ const updateWorkout = async (req, res, next) => {
 const getUpdateWorkout = async (req, res, next) => {
     try {
 
-        if (req.headers.workout_id) {
+        if (req.query.workout_id) {
 
             const sql = "SELECT workout FROM workout WHERE id = ?"
-            const data = [req.headers.workout_id]
+            const data = [req.query.workout_id]
 
 
             pool.query(sql, data, async (error, result) => {
@@ -230,10 +228,10 @@ const checkWhoOwnsWorkout = (req, res, next) => {
 
             const decoded = jwt.verify(authToken, process.env.SECRET_JWT)
 
-            if (req.headers.workout_id) {
+            if (req.query.workout_id) {
 
                 const sql = "SELECT trainer_id FROM workout WHERE id = ?"
-                const data = [req.headers.workout_id]
+                const data = [req.query.workout_id]
 
 
                 pool.query(sql, data, async (error, result) => {
